@@ -65,13 +65,19 @@ int main(int argc, char** argv)
         // Включим режим отслеживания нажатия клавиш, для проверки ниже
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-        double colorRGB = 0.0;
-        do{
+        double start_value = glfwGetTime(), colorRGB;
+        int delta = 0;
+        constexpr double change = 1;
+        const double PI_half_deg = PI / 180;
+
+        do {
+            colorRGB = start_value - glfwGetTime();
+
             // Пока что ничего не выводим. Это будет в уроке 2.
             glClearColor(
-                static_cast<float>(sin(colorRGB * PI / 180)),
-                static_cast<float>(abs(cos(colorRGB * PI / 180))),
-                static_cast<float>(abs(sin(colorRGB * PI / 180) + cos(colorRGB * PI / 180))),
+                static_cast<float>(sin((colorRGB * delta) * PI_half_deg)),
+                static_cast<float>(abs(cos((colorRGB * delta) * PI_half_deg))),
+                static_cast<float>(abs(sin((colorRGB * delta) * PI_half_deg)) + cos((colorRGB * delta) * PI_half_deg)),
                 1.0f);
 
             glClear(GL_COLOR_BUFFER_BIT);
@@ -80,8 +86,15 @@ int main(int argc, char** argv)
             glfwSwapBuffers(window);
             glfwPollEvents();
 
+            if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
             {
-                colorRGB <= 180 ? colorRGB += 1.0 : colorRGB = 0;
+                std::cout << "Delta increased, delta = " << delta << std::endl;
+                delta += change;
+            }
+            else if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            {
+                std::cout << "Delta decreased, delta = " << delta << std::endl;
+                delta -= change;
             }
 
         }
@@ -90,7 +103,5 @@ int main(int argc, char** argv)
             glfwWindowShouldClose(window) == 0 );
 
         glfwTerminate();
-
-        getchar();
         return 0;
 }
